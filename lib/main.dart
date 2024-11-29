@@ -1,5 +1,5 @@
+import 'package:club_management_and_information_system/screens/club_screen.dart';
 import 'package:club_management_and_information_system/shared_preference.dart';
-import 'package:club_management_and_information_system/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -25,9 +25,9 @@ class MainClassState extends State<MainClass> {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return  MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: SplashScreen(),
+      home: ClubScreen(),
     );
   }
 }
