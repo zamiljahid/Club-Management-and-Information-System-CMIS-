@@ -212,11 +212,16 @@ class _ClubScreenState extends State<ClubScreen> {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Image.asset(
-                                clubs[index]['image']!,
-                                height: 200,
-                                fit: BoxFit.cover,
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(16), // Adjust the radius as needed
+                                child: Image.asset(
+                                  clubs[index]['image']!,
+                                  height: 300,
+                                  width: double.infinity,
+                                  fit: BoxFit.cover,
+                                ),
                               ),
+
                               const SizedBox(height: 16),
                               Text(
                                 clubs[index]['name']!,

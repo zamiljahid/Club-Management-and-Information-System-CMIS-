@@ -142,8 +142,6 @@ class ClubDetailsScreen extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 20),
-
-        // Horizontal scrollable events using PageView
         SizedBox(
           height: 350,  // Set height for event cards
           child: PageView.builder(

@@ -1,10 +1,47 @@
+import 'package:club_management_and_information_system/screens/club_screen.dart';
 import 'package:flutter/material.dart';
+
 class LoginScreen extends StatelessWidget{
   const LoginScreen({Key? key}) : super(key: key);
 
+  final String staticEmail = "1234";
+  final String staticPassword = "1234";
+
   @override
   Widget build(BuildContext context) {
-  return Scaffold(
+    final TextEditingController loginController = TextEditingController();
+    final TextEditingController passwordController = TextEditingController();
+
+
+    void handleLogin() {
+      if (loginController.text == staticEmail &&
+          passwordController.text == staticPassword) {
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => ClubScreen()),
+        );
+      } else {
+
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: const Text("Login Failed"),
+              content: const Text("Invalid login ID or password. Please try again."),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text("OK"),
+                ),
+              ],
+            );
+          },
+        );
+      }
+    }
+
+    return Scaffold(
     body: Stack(
       children: [
         Container(
@@ -57,7 +94,7 @@ class LoginScreen extends StatelessWidget{
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    SizedBox(height: 10,),
+                    SizedBox(height: 40,),
                     Container(
                       padding: EdgeInsets.all(8), // Border width
                       decoration: BoxDecoration(
@@ -71,8 +108,9 @@ class LoginScreen extends StatelessWidget{
                         ),
                       ),
                     ),
-                    SizedBox(height: 60,),
+                    SizedBox(height: 50,),
                     TextField(
+                      controller: loginController,
                       decoration: InputDecoration(
                         enabledBorder: OutlineInputBorder(
                           borderSide: BorderSide(
@@ -82,16 +120,18 @@ class LoginScreen extends StatelessWidget{
                             borderSide: BorderSide(
                                 width: 2, color: Color(0xff8c0000)),
                           ),
-                        suffixIcon: Icon(Icons.email,color:  Color(0xff8c0000),),
-                        label: Text('Email',style: TextStyle(
+                        suffixIcon: Icon(Icons.person,color:  Color(0xff8c0000),),
+                        label: Text('Login ID',style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Color(0xff8c0000),
                 
                         ),)
                       ),
                     ),
+
                     SizedBox(height: 10,),
                     TextField(
+                      controller: passwordController,
                       decoration: InputDecoration(
                           enabledBorder: OutlineInputBorder(
                             borderSide: BorderSide(
@@ -109,22 +149,27 @@ class LoginScreen extends StatelessWidget{
                       ),
                     ),
                     SizedBox(height: 70,),
-                    Container(
-                      height: 55,
-                        width: 300,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(30),
-                        gradient: LinearGradient(
-                            colors:
-                            [Color(0xff8c0000), Color(0xffda2851)
-                            ]),
+                    GestureDetector(
+                      onTap: (){
+                        handleLogin();
+                      },
+                      child: Container(
+                        height: 55,
+                          width: 300,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(30),
+                          gradient: LinearGradient(
+                              colors:
+                              [Color(0xff8c0000), Color(0xffda2851)
+                              ]),
+                        ),
+                        child: Center(child: Text('SIGN IN',style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                          color: Colors.white
+                        ),),),
+
                       ),
-                      child: Center(child: Text('SIGN IN',style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20,
-                        color: Colors.white
-                      ),),),
-                
                     )
                   ],
                 

@@ -1,4 +1,5 @@
 import 'package:club_management_and_information_system/screens/club_screen.dart';
+import 'package:club_management_and_information_system/screens/event_screen.dart';
 import 'package:club_management_and_information_system/screens/login_screeen.dart';
 import 'package:club_management_and_information_system/screens/splash_screen.dart';
 import 'package:club_management_and_information_system/shared_preference.dart';
@@ -29,7 +30,7 @@ class MainClassState extends State<MainClass> {
   Widget build(BuildContext context) {
     return  MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: const SplashScreen(),
+      home: ClubScreen(),
     );
   }
 
