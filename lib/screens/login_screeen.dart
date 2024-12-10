@@ -1,4 +1,5 @@
 import 'package:club_management_and_information_system/screens/club_screen.dart';
+import 'package:club_management_and_information_system/screens/dashboard_screen.dart';
 import 'package:flutter/material.dart';
 
 class LoginScreen extends StatelessWidget{
@@ -19,7 +20,7 @@ class LoginScreen extends StatelessWidget{
 
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => ClubScreen()),
+          MaterialPageRoute(builder: (context) => DashboardScreen()),
         );
       } else {
 
@@ -104,7 +105,7 @@ class LoginScreen extends StatelessWidget{
                       child: ClipOval(
                         child: SizedBox.fromSize(
                           size: Size.fromRadius(80), // Image radius
-                          child: Image.asset('assets/images/appIcon.jpg', fit: BoxFit.cover),
+                          child: Image.asset('assets/appIcon.jpg', fit: BoxFit.cover),
                         ),
                       ),
                     ),
@@ -168,7 +169,6 @@ class LoginScreen extends StatelessWidget{
                           fontSize: 20,
                           color: Colors.white
                         ),),),
-
                       ),
                     )
                   ],

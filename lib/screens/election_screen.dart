@@ -1,39 +1,53 @@
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
-import 'event_details_screen.dart';
+import 'club_details_screen.dart';
 
-class EventScreen extends StatefulWidget {
+class ElectionScreen extends StatefulWidget {
   @override
-  _EventScreenState createState() => _EventScreenState();
+  _ElectionScreenState createState() => _ElectionScreenState();
 }
 
-class _EventScreenState extends State<EventScreen> {
+class _ElectionScreenState extends State<ElectionScreen> {
   final PageController _controller = PageController();
 
-  final List<Map<String, dynamic>> events = [
+  final List<Map<String, dynamic>> candidates = [
     {
-      'image': 'assets/images/eventIcon.jpg',
-      'name': 'NextGen Diplomats' ,
-      'description': 'Shaping the future of global leadership through innovation, collaboration, and vision.',
-      'club': 'UIU Model United Nations Club'
-    },
-    {
-      'image': 'assets/images/presentation_champs.jpg',
-      'name': 'Presentation Champs: Season 1',
-      'description': 'Master the art of impactful storytelling with Presentation Champs!',
-      'club': 'UIU English Language Forum'
-
+      'image': 'assets/images/Gen-Z.jpg',
+      'name': 'John Doe',
+      'position': 'President',
+      'bio': 'John has a strong background in leadership and community service, with a proven track record of organizing successful events.',
+      'manifesto': 'Focus on transparency, innovation, and inclusivity to create a better community for everyone.',
     },
     {
       'image': 'assets/images/Gen-Z.jpg',
-      'name': 'Gen-Z',
-      'description': 'The connected, creative, and change-driven generation redefining the norm.',
-    'club': 'UIU'
-
-    }
-];
-
+      'name': 'Jane Smith',
+      'position': 'Vice President',
+      'bio': 'Jane is passionate about fostering teamwork and empowering others to achieve their goals.',
+      'manifesto': 'Advocate for equal opportunities and provide support for new initiatives in the community.',
+    },
+    {
+      'image': 'assets/images/Gen-Z.jpg',
+      'name': 'Alex Johnson',
+      'position': 'General Secretary',
+      'bio': 'Alex is experienced in managing logistics and ensuring smooth communication between different teams.',
+      'manifesto': 'Prioritize efficient management and improved communication channels for everyone.',
+    },
+    {
+      'image': 'assets/images/Gen-Z.jpg',
+      'name': 'Emily Davis',
+      'position': 'Treasurer',
+      'bio': 'Emily has a strong financial acumen and is skilled in budgeting and resource allocation.',
+      'manifesto': 'Ensure transparency in financial matters and optimize resources for maximum benefit.',
+    },
+    {
+      'image': 'assets/images/Gen-Z.jpg',
+      'name': 'Michael Brown',
+      'position': 'Cultural Secretary',
+      'bio': 'Michael is a creative thinker and a strong advocate for promoting cultural diversity.',
+      'manifesto': 'Encourage cultural events and celebrate the diversity of our community.',
+    },
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +62,7 @@ class _EventScreenState extends State<EventScreen> {
         ),
         child: Column(
           children: [
-            const SizedBox(height: 40),
+            SizedBox(height: 20,),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -59,7 +73,7 @@ class _EventScreenState extends State<EventScreen> {
                   },
                 ),
                 Text(
-                  "ON GOING EVENTS",
+                  'Election',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 28,
@@ -72,30 +86,17 @@ class _EventScreenState extends State<EventScreen> {
                   },
                 ),
               ],
-
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 20),
             Expanded(
               child: PageView.builder(
                 controller: _controller,
-                itemCount: events.length,
+                itemCount: candidates.length,
                 itemBuilder: (context, index) {
                   return Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: InkWell(
                       onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => EventDetailsScreen(
-                              imageName: events[index]['image']!,
-                              name:  events [index]['name']!,
-                              description:  events[index]['description']!,
-                              club:  events[index]['club']!,  // Pass events as an argument
-                            ),
-                          ),
-
-                        );
                       },
                       child: Card(
                         color: Colors.white,
@@ -111,7 +112,7 @@ class _EventScreenState extends State<EventScreen> {
                               ClipRRect(
                                 borderRadius: BorderRadius.circular(16), // Adjust the radius as needed
                                 child: Image.asset(
-                                  events[index]['image']!,
+                                  candidates[index]['image']!,
                                   height: 300,
                                   width: double.infinity,
                                   fit: BoxFit.cover,
@@ -120,18 +121,45 @@ class _EventScreenState extends State<EventScreen> {
 
                               const SizedBox(height: 16),
                               Text(
-                                events[index]['name']!,
+                                candidates[index]['name']!,
                                 style: const TextStyle(
                                   fontSize: 24,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              const SizedBox(height: 8),
                               Text(
-                                events[index]['description']!,
+                                candidates[index]['position']!,
                                 textAlign: TextAlign.center,
                                 style: const TextStyle(fontSize: 16),
                               ),
+                              const SizedBox(height: 8),
+                              Text(
+                                candidates[index]['bio']!,
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(fontSize: 16),
+                              ),
+                              SizedBox(height: 10,),
+                              GestureDetector(
+                                onTap: (){
+                                },
+                                child: Container(
+                                  height: 55,
+                                  width: 300,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(30),
+                                    gradient: LinearGradient(
+                                        colors:
+                                        [Color(0xff8c0000), Color(0xffda2851)
+                                        ]),
+                                  ),
+                                  child: Center(child: Text('Vote',style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20,
+                                      color: Colors.white
+                                  ),),),
+
+                                ),
+                              )
                             ],
                           ),
                         ),
@@ -144,7 +172,7 @@ class _EventScreenState extends State<EventScreen> {
 
             SmoothPageIndicator(
               controller: _controller,
-              count:  events.length,
+              count: candidates.length,
               effect: const WormEffect(
                 dotHeight: 8,
                 dotWidth: 8,

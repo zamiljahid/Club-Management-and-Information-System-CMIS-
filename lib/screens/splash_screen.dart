@@ -54,7 +54,7 @@ with SingleTickerProviderStateMixin {
               child: ClipOval(
                 child: SizedBox.fromSize(
                   size: Size.fromRadius(100),
-                  child: Image.asset('assets/images/appIcon.jpg', fit: BoxFit.cover),
+                  child: Image.asset('assets/appIcon.jpg', fit: BoxFit.cover),
                 ),
               ),
             ),

@@ -62,7 +62,7 @@ class EventDetailsScreen extends StatelessWidget {
                       ],
                     ),
                   ),
-                  const SizedBox(height:50),
+                  const SizedBox(height:40),
                   ClipRRect(
                     borderRadius: BorderRadius.circular(20),
                     child: Image.asset(
@@ -116,6 +116,7 @@ class EventDetailsScreen extends StatelessWidget {
                   ),
                   Text(
                     club,
+                    softWrap: true,
                     style: const TextStyle(
                       fontSize: 32,
                       fontWeight: FontWeight.bold,

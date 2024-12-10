@@ -3,12 +3,12 @@ import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 import 'club_details_screen.dart';
 
-class ClubScreen extends StatefulWidget {
+class ProfileScreen extends StatefulWidget {
   @override
-  _ClubScreenState createState() => _ClubScreenState();
+  _ProfileScreenState createState() => _ProfileScreenState();
 }
 
-class _ClubScreenState extends State<ClubScreen> {
+class _ProfileScreenState extends State<ProfileScreen> {
   final PageController _controller = PageController();
 
   final List<Map<String, dynamic>> clubs = [
@@ -168,33 +168,16 @@ class _ClubScreenState extends State<ClubScreen> {
         ),
         child: Column(
           children: [
-            SizedBox(height: 20,),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                IconButton(
-                  icon: Icon(Icons.arrow_back, color: Colors.white),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                ),
-                Text(
-                  'CLUBS',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                IconButton(
-                  icon: Icon(Icons.arrow_back, color: Colors.transparent),
-                  onPressed: () {
-                  },
-                ),
-              ],
-
+            const SizedBox(height: 40),
+            const Text(
+              'CLUBS',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 20),
             Expanded(
               child: PageView.builder(
                 controller: _controller,
