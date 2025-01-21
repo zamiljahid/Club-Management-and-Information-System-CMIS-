@@ -1,5 +1,5 @@
-import 'package:club_management_and_information_system/screens/chat_screen.dart';
-import 'package:club_management_and_information_system/screens/dashboard_screen.dart';
+import 'package:club_management_and_information_system/routes/routes.dart';
+import 'package:club_management_and_information_system/screens/election_screen.dart';
 import 'package:club_management_and_information_system/screens/splash_screen.dart';
 
 import 'package:club_management_and_information_system/shared_preference.dart';
@@ -30,7 +30,8 @@ class MainClassState extends State<MainClass> {
   Widget build(BuildContext context) {
     return  MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: SplashScreen(),
+      onGenerateRoute: RouterGenerator.generateRoute,
+      home: ElectionScreen(),
     );
   }
 

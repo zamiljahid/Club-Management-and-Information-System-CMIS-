@@ -1,15 +1,13 @@
 import 'dart:math';
 import 'dart:ui';
-
-import 'package:club_management_and_information_system/screens/chat_screen.dart';
-import 'package:club_management_and_information_system/screens/profile_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
-import 'club_screen.dart';
+import 'package:lottie/lottie.dart';
+import '../api/api_client.dart';
+import '../model/menu_model.dart';
+import '../routes/menu_title_list.dart';
+import '../shared_preference.dart';
 import 'drawer_widget.dart';
-import 'election_screen.dart';
-import 'event_screen.dart';
 import 'menu_card.dart';
 
 
@@ -26,7 +24,7 @@ class _DashboardScreenState extends State<DashboardScreen>
   bool isDragging = false;
   bool isDrawerClose = true;
 
-  Future<List<dynamic>>? menuList;
+  Future<List<MenuModelClass>?>? menuList;
 
   late AnimationController _animationController;
   late Animation<double> animation;
@@ -48,14 +46,10 @@ class _DashboardScreenState extends State<DashboardScreen>
       parent: _animationController,
       curve: Curves.fastOutSlowIn,
     ));
-    // Initialize menuList with new screens
-    menuList = Future.value([
-      {'name': 'Clubs', 'icon': Icons.group, 'screen': ClubScreen()},
-      {'name': 'Events', 'icon': Icons.event, 'screen': EventScreen()},
-      {'name': 'Elections', 'icon': Icons.how_to_vote, 'screen': ElectionScreen()},
-      {'name': 'Profile', 'icon': Icons.person, 'screen': ProfileScreen()},
-      {'name': 'Chat', 'icon': Icons.chat, 'screen': GroupChatScreen()},
-    ]);
+    menuList = ApiClient().getMenu(
+      '?role_id=${SharedPrefs.getString('role_id').toString()}',
+      context,
+    );
     super.initState();
   }
 
@@ -116,19 +110,19 @@ class _DashboardScreenState extends State<DashboardScreen>
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [Color(0xff8c0000), Color(0xffda2851)],
+            colors:[Color(0xff154973),Color(0xff0f65a5)],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
         ),
-        child: FutureBuilder<List<dynamic>>(
+        child: FutureBuilder<List<MenuModelClass>?>(
           future: menuList,
           builder: (context, snapshot) {
             if (snapshot.hasError) {
               return Text(snapshot.error.toString());
             } else if (snapshot.data == null) {
               return Center(
-                child: CircularProgressIndicator(color: Colors.red[900]),
+                child: CircularProgressIndicator(color: Colors.white),
               );
             } else {
               return Stack(
@@ -144,10 +138,10 @@ class _DashboardScreenState extends State<DashboardScreen>
                       onHorizontalDragUpdate: onDragUpdate,
                       onHorizontalDragEnd: onDragEnd,
                       child: DrawerWidget(
-                        empId: 'EMP123',
-                        empName: 'John Doe',
-                        empPic: 'https://randomuser.me/api/portraits/men/32.jpg',
-                        empPosition: 'Student',
+                        empId: SharedPrefs.getString('id').toString(),
+                        empName: SharedPrefs.getString('name').toString(),
+                        pic: SharedPrefs.getString('pic').toString(),
+                        position: SharedPrefs.getString('role').toString(),
                         dashboardList: snapshot.data!,
                       ),
                     ),
@@ -225,7 +219,7 @@ class HomeWidget extends StatelessWidget {
                   bottomRight: Radius.circular(30)),
               child: AppBar(
                 centerTitle: true,
-                backgroundColor: Colors.red[900],
+                backgroundColor: Color(0xff154973),
                 title: const Text(
                   'Dashboard',
                   style: TextStyle(color: Colors.white),
@@ -242,7 +236,7 @@ class HomeWidget extends StatelessWidget {
                 flexibleSpace: Container(
                   decoration: const BoxDecoration(
                     gradient: LinearGradient(
-                      colors: [Color(0xff8c0000), Color(0xffda2851)], // Gradient colors
+                      colors:[Color(0xff154973),Color(0xff0f65a5)], // Gradient colors
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                     ),
@@ -251,21 +245,26 @@ class HomeWidget extends StatelessWidget {
               ),
             ),
           ),
+    Center(
+    child: Lottie.asset('animation/dashboard.json',
+    height: MediaQuery.of(context).size.height / 4)
+    ),
           MenuItems(dashboardList: dashboardList),
         ],
       ),
     );
   }
 }
+
+
+
 class MenuItems extends StatelessWidget {
   const MenuItems({super.key, required this.dashboardList});
-
   final List<dynamic> dashboardList;
-
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: GridView.builder(
+      child:GridView.builder(
         padding: const EdgeInsets.all(8.0),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
@@ -274,14 +273,24 @@ class MenuItems extends StatelessWidget {
         ),
         itemCount: dashboardList.length,
         itemBuilder: (BuildContext context, int i) {
-          final item = dashboardList[i];
           return MenuCard(
-            name: item['name'],
-            icon: item['icon'],
-            screen: item['screen'],
+            name: ChooseMenu.getTitle(
+                menuTitle:  dashboardList[i].menuName.toString()),
+            icon: ChooseMenu.getIcon(
+                menuTitle: dashboardList[i].menuName.toString()),
+            onPressed: () {
+              String route = ChooseMenu.getRoutes(
+                menuTitle: dashboardList[i].menuName.toString(),
+              );
+              Navigator.pushNamed(
+                context,
+                route,
+              );
+            },
           );
         },
       ),
+
     );
   }
 }

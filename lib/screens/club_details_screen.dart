@@ -1,28 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
+import '../model/club_model.dart';
+import '../shared_preference.dart';
+
 class ClubDetailsScreen extends StatelessWidget {
-  final String imageName;
-  final String name;
-  final String description;
-  final List<Map<String, dynamic>> events;
+  String? imageName;
+  String? name;
+  String? description;
+  List<EventModel>? events;
 
   ClubDetailsScreen({
-    required this.imageName,
-    required this.name,
-    required this.description,
-    required this.events,
+    this.imageName,
+    this.name,
+    this.description,
+    this.events,
   });
 
-  // Categorize events
-  List<Map<String, dynamic>> get previousEvents =>
-      events.where((event) => event['status'] == 'upcoming').toList();
+  List<EventModel> get previousEvents =>
+      events!.where((event) => event.status == 'On Going Event').toList();
 
-  List<Map<String, dynamic>> get upcomingEvents =>
-      events.where((event) => event['status'] == 'upcoming').toList();
+  List<EventModel> get upcomingEvents =>
+      events!.where((event) => event.status == 'Upcoming Event').toList();
 
-  List<Map<String, dynamic>> get ongoingEvents =>
-      events.where((event) => event['status'] == 'upcoming').toList();
+  List<EventModel> get ongoingEvents =>
+      events!.where((event) => event.status == 'Previous Event').toList();
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +35,7 @@ class ClubDetailsScreen extends StatelessWidget {
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [Color(0xff8c0000), Color(0xffff0039)],
+              colors: [Color(0xff154973), Color(0xff0f65a5)],
             ),
           ),
           child: Padding(
@@ -64,23 +66,22 @@ class ClubDetailsScreen extends StatelessWidget {
                       Spacer(),
                       IconButton(
                         icon: Icon(Icons.arrow_back, color: Colors.transparent),
-                        onPressed: () {
-                        },
+                        onPressed: () {},
                       ),
                     ],
                   ),
                 ),
                 ClipRRect(
                   borderRadius: BorderRadius.circular(20),
-                  child: Image.asset(
-                    imageName,
+                  child: Image.network(
+                    imageName!,
                     height: 300,
                     fit: BoxFit.cover,
                   ),
                 ),
                 const SizedBox(height: 20),
                 Text(
-                  name,
+                  name!,
                   style: const TextStyle(
                     fontSize: 32,
                     fontWeight: FontWeight.bold,
@@ -96,13 +97,14 @@ class ClubDetailsScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 10),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                   decoration: BoxDecoration(
                     color: Colors.white.withOpacity(0.9),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
-                    description,
+                    description!,
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w500,
@@ -112,11 +114,58 @@ class ClubDetailsScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 20),
-
-                // Event categories
-                _buildEventCategory('Previous Events', previousEvents),
-                _buildEventCategory('Upcoming Events', upcomingEvents),
-                _buildEventCategory('Ongoing Events', ongoingEvents),
+                if (events!.isNotEmpty) ...[
+                  if (previousEvents.isNotEmpty)
+                  _buildEventCategory('Previous Events', previousEvents),
+                  if (upcomingEvents.isNotEmpty)
+                    _buildEventCategory('Upcoming Events', upcomingEvents),
+                  if (ongoingEvents.isNotEmpty)
+                    _buildEventCategory('Ongoing Events', ongoingEvents),
+                ],
+                const SizedBox(height: 20),
+                SharedPrefs.getString('role_id') == '2' ||
+                    SharedPrefs.getString('role_id') == '3'
+                    ? Center(
+                  child: Text(
+                    "Executive Position holders of a club cannot register for another club",
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.redAccent,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                )
+                    : Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [Color(0xff0f65a5), Color(0xff154973)],
+                    ),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: Colors.white, // White border
+                      width: 2, // Border thickness
+                    ),
+                  ),
+                  child: TextButton(
+                    onPressed: () {
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16.0),
+                      child: Text(
+                        "Register as a General Member Now",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                )
               ],
             ),
           ),
@@ -125,14 +174,11 @@ class ClubDetailsScreen extends StatelessWidget {
     );
   }
 
-  // Helper method to build event category
-  Widget _buildEventCategory(String title, List<Map<String, dynamic>> events) {
-    // PageController for horizontal scrolling
+  Widget _buildEventCategory(String title, List<EventModel> events) {
     final PageController pageController = PageController();
 
     return Column(
       children: [
-        // Event category title
         Text(
           title,
           style: const TextStyle(
@@ -143,7 +189,7 @@ class ClubDetailsScreen extends StatelessWidget {
         ),
         const SizedBox(height: 20),
         SizedBox(
-          height: 350,  // Set height for event cards
+          height: 350, // Set height for event cards
           child: PageView.builder(
             controller: pageController,
             itemCount: events.length,
@@ -158,8 +204,8 @@ class ClubDetailsScreen extends StatelessWidget {
                   elevation: 5,
                   child: Column(
                     children: [
-                      Image.asset(
-                        event['eventImage']!,
+                      Image.network(
+                        event.picUrl!,
                         height: 180,
                         width: double.infinity,
                         fit: BoxFit.cover,
@@ -167,7 +213,7 @@ class ClubDetailsScreen extends StatelessWidget {
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
-                          event['eventName']!,
+                          event.eventName!,
                           style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
@@ -175,13 +221,13 @@ class ClubDetailsScreen extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        event['eventDate']!,
+                        event.startDate!,
                         style: const TextStyle(fontSize: 16),
                       ),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
-                          event['eventDescription']!,
+                          event.eventDescription!,
                           textAlign: TextAlign.center,
                           style: const TextStyle(fontSize: 16),
                         ),
@@ -208,7 +254,7 @@ class ClubDetailsScreen extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(height: 20),  // Spacer
+
       ],
     );
   }

@@ -1,84 +1,186 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:web_socket_channel/io.dart';
+import 'dart:convert';
 
+import '../shared_preference.dart';
 class GroupChatScreen extends StatefulWidget {
+  GroupChatScreen();
+
   @override
   _GroupChatScreenState createState() => _GroupChatScreenState();
 }
+
 class _GroupChatScreenState extends State<GroupChatScreen> {
-  final List<Map<String, dynamic>> _messages = [
-    {"sender": "Alice", "message": "Hi everyone!", "isSent": false, "time": "10:00 AM"},
-    {"sender": "Bob", "message": "Hello Alice!", "isSent": false, "time": "10:01 AM"},
-    {"sender": "You", "message": "Hey all!", "isSent": true, "time": "10:02 AM"},
-  ];
-  bool _isTyping = false;
+  late IOWebSocketChannel _channel;
+  final List<Map<String, dynamic>> _messages = [];
+  late TextEditingController _controller;
+  late ScrollController _scrollController;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController();
+    _scrollController = ScrollController();
+    _connectWebSocket();
+  }
+
+  void _connectWebSocket() {
+    try {
+      print("Attempting to connect to WebSocket...");
+      _channel = IOWebSocketChannel.connect('ws://10.0.2.2:5185/ws');
+      // _channel = IOWebSocketChannel.connect('ws://2416-27-147-142-242.ngrok-free.app/ws');
+
+      print("Connected to WebSocket");
+
+      _channel.stream.listen((message) {
+        print("WebSocket connection established. Message received: $message");
+
+        final List<dynamic> receivedMessages = json.decode(message);
+        setState(() {
+          for (var msg in receivedMessages) {
+            if (msg['club_id'] == SharedPrefs.getInt('club_id')) {
+              print("Processing message: $msg");
+              _messages.add({
+                "sender": msg['user_id'],
+                "message": msg['message'],
+                "time": msg['timestamp'],
+              });
+            }
+          }
+          _scrollToBottom();
+        });
+      }, onError: (error) {
+        print("WebSocket connection error: $error");
+      }, onDone: () {
+        print("WebSocket connection closed.");
+      });
+
+      print("WebSocket connection initialized.");
+    } catch (e) {
+      print("Error while connecting to WebSocket: $e");
+    }
+  }
+
+  void _sendMessage(String message) {
+    final messageData = {
+      "user_id": SharedPrefs.getString('id'),
+      "club_id": SharedPrefs.getInt('club_id'),
+      "message": message,
+      "timestamp": DateTime.now().toIso8601String(),
+    };
+
+    try {
+      print("Sending message: $messageData");
+      print("WebSocket URL: ws://2416-27-147-142-242.ngrok-free.app/ws");
+
+      _channel.sink.add(json.encode(messageData));
+      print("Message sent successfully.");
+
+      setState(() {
+        _messages.add({
+          "sender": SharedPrefs.getString('id'),
+          "message": message,
+          "time": messageData['timestamp'],
+        });
+      });
+      _scrollToBottom();
+    } catch (e) {
+      print("Error sending message: $e");
+    }
+  }
+
+  void _scrollToBottom() {
+    // Scroll to the bottom if the ListView is populated
+    if (_scrollController.hasClients) {
+      _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    _scrollController.dispose(); // Dispose the controller
+    _channel.sink.close();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        backgroundColor: Colors.red[900],
+        backgroundColor: Color(0xff154973),
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            IconButton(icon: Icon(Icons.arrow_back, color: Colors.white,),  onPressed: () {
-              Navigator.pop(context);
-            },),
+            IconButton(
+              icon: Icon(Icons.arrow_back, color: Colors.white),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
             CircleAvatar(
-              backgroundImage: AssetImage('assets/images/eventIcon.jpg'),
+              backgroundImage: AssetImage('assets/appIcon.jpg'),
             ),
             SizedBox(width: 10),
-            Center(child: Text("UIU MUN Club", style: TextStyle(color: Colors.white),)),
-            IconButton(icon: Icon(Icons.more_vert, color: Colors.white,), onPressed: () {}),
+            Center(
+                child: Text(
+                  "UIU MUN Club",
+                  style: TextStyle(color: Colors.white),
+                )),
+            IconButton(icon: Icon(Icons.more_vert, color: Colors.transparent), onPressed: () {}),
           ],
         ),
       ),
       body: Container(
-
+        color: Colors.white,
         child: Column(
           children: [
             Expanded(
               child: ListView.builder(
+                controller: _scrollController, // Attach the ScrollController
                 padding: EdgeInsets.all(10),
                 itemCount: _messages.length,
                 itemBuilder: (context, index) {
                   final message = _messages[index];
                   return _chatBubble(
                     message["message"],
-                    message["isSent"],
                     message["sender"],
                     message["time"],
                   );
                 },
               ),
             ),
-            if (_isTyping) _typingIndicator(), // Show typing indicator when active
-            _chatInputField(), // Input field at the bottom
+            _chatInputField(),
           ],
         ),
       ),
     );
   }
 
-  // Chat bubble widget
-  Widget _chatBubble(String message, bool isSent, String sender, String time) {
+  Widget _chatBubble(String message, String sender, String time) {
+    final isCurrentUser = sender == SharedPrefs.getString('id');
     return Align(
-      alignment: isSent ? Alignment.centerRight : Alignment.centerLeft,
+      alignment: isCurrentUser ? Alignment.centerRight : Alignment.centerLeft,
       child: Padding(
         padding: EdgeInsets.symmetric(vertical: 5),
         child: Column(
           crossAxisAlignment:
-          isSent ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+          isCurrentUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
           children: [
-            if (!isSent) Text(sender, style: TextStyle(fontSize: 12, color: Colors.grey)),
+            if (!isCurrentUser) Text(sender, style: TextStyle(fontSize: 12, color: Colors.grey)),
             AnimatedContainer(
               duration: Duration(milliseconds: 300),
               padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
               decoration: BoxDecoration(
-                color: isSent ? Colors.red[100] : Colors.grey[200],
+                color: isCurrentUser ? Color(0xff154973) : Colors.grey[200],
                 borderRadius: BorderRadius.circular(20),
               ),
-              child: Text(message),
+              child: Text(
+                message,
+                style: TextStyle(color: isCurrentUser ? Colors.white : Colors.black),
+              ),
             ),
             SizedBox(height: 5),
             Text(time, style: TextStyle(fontSize: 10, color: Colors.grey)),
@@ -88,41 +190,11 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
     );
   }
 
-  // Typing indicator widget
-  Widget _typingIndicator() {
-    return Padding(
-      padding: EdgeInsets.all(10),
-      child: Row(
-        children: [
-
-          CircleAvatar(
-            radius: 12,
-            backgroundImage: NetworkImage('https://randomuser.me/api/portraits/men/32.jpg'),
-          ),
-
-          SizedBox(width: 10),
-          Lottie.asset(
-            'assets/typing-indicator.json',
-            width: 50,
-            height: 20,
-          ),
-        ],
-      ),
-    );
-  }
-
-  // Chat input field
   Widget _chatInputField() {
-    TextEditingController _controller = TextEditingController();
-
     return Padding(
       padding: EdgeInsets.all(10),
       child: Row(
         children: [
-          IconButton(
-            icon: Icon(Icons.attach_file, color: Colors.red[900],),
-            onPressed: () {},
-          ),
           Expanded(
             child: TextField(
               controller: _controller,
@@ -135,32 +207,19 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
                 filled: true,
                 fillColor: Colors.grey[200],
               ),
-              onChanged: (text) {
-                setState(() {
-                  _isTyping = text.isNotEmpty;
-                });
-              },
             ),
           ),
           SizedBox(width: 10),
           GestureDetector(
             onTap: () {
               if (_controller.text.isNotEmpty) {
-                setState(() {
-                  _messages.add({
-                    "sender": "You",
-                    "message": _controller.text,
-                    "isSent": true,
-                    "time": "10:03 AM", // Static time for demo
-                  });
-                  _controller.clear();
-                  _isTyping = false;
-                });
+                _sendMessage(_controller.text);
+                _controller.clear();
               }
             },
             child: Icon(
               Icons.send,
-              color: Colors.red[900],
+              color: Color(0xff154973),
             ),
           ),
         ],

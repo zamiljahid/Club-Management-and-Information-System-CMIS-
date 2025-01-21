@@ -1,6 +1,9 @@
+import 'package:club_management_and_information_system/model/club_model.dart';
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
+import '../api/api_client.dart';
+import '../shared_preference.dart';
 import 'club_details_screen.dart';
 
 class ClubScreen extends StatefulWidget {
@@ -11,149 +14,11 @@ class ClubScreen extends StatefulWidget {
 class _ClubScreenState extends State<ClubScreen> {
   final PageController _controller = PageController();
 
-  final List<Map<String, dynamic>> clubs = [
-    {
-      'image': 'assets/images/art_club.jpg',
-      'name': 'Art Club',
-      'description': 'Unleash your creativity with paints and crafts.',
-      'events': [
-        {
-          'eventName': 'Art Exhibition',
-          'eventDate': 'December 15, 2024',
-          'eventDescription': 'An exhibition showcasing student art.',
-          'eventImage': 'assets/images/test1.jpg',
-          'status': 'upcoming', // Added status
-        },
-        {
-          'eventName': 'Painting Workshop',
-          'eventDate': 'January 5, 2025',
-          'eventDescription': 'A workshop to improve painting skills.',
-          'eventImage': 'assets/images/test2.jpg',
-          'status': 'upcoming', // Added status
-        },
-        {
-          'eventName': 'Craft Fair',
-          'eventDate': 'February 20, 2025',
-          'eventDescription': 'A fair where art and craft works will be displayed for sale.',
-          'eventImage': 'assets/images/test3.jpg',
-          'status': 'upcoming', // Added status
-        },
-        {
-          'eventName': 'Sketching Session',
-          'eventDate': 'March 10, 2025',
-          'eventDescription': 'An open session for sketching and exploring different techniques.',
-          'eventImage': 'assets/images/test4.jpg',
-          'status': 'upcoming', // Added status
-        },
-      ],
-    },
-    {
-      'image': 'assets/images/robotics_club.jpg',
-      'name': 'Robotics Club',
-      'description': 'Build robots and compete in challenges.',
-      'events': [
-        {
-          'eventName': 'Art Exhibition',
-          'eventDate': 'December 15, 2024',
-          'eventDescription': 'An exhibition showcasing student art.',
-          'eventImage': 'assets/images/test1.jpg',
-          'status': 'upcoming', // Added status
-        },
-        {
-          'eventName': 'Painting Workshop',
-          'eventDate': 'January 5, 2025',
-          'eventDescription': 'A workshop to improve painting skills.',
-          'eventImage': 'assets/images/test2.jpg',
-          'status': 'upcoming', // Added status
-        },
-        {
-          'eventName': 'Craft Fair',
-          'eventDate': 'February 20, 2025',
-          'eventDescription': 'A fair where art and craft works will be displayed for sale.',
-          'eventImage': 'assets/images/test3.jpg',
-          'status': 'upcoming', // Added status
-        },
-        {
-          'eventName': 'Sketching Session',
-          'eventDate': 'March 10, 2025',
-          'eventDescription': 'An open session for sketching and exploring different techniques.',
-          'eventImage': 'assets/images/test4.jpg',
-          'status': 'upcoming', // Added status
-        },
-      ],
-    },
-    {
-      'image': 'assets/images/music_club.jpg',
-      'name': 'Music Club',
-      'description': 'Jam with fellow music enthusiasts.',
-      'events': [
-        {
-          'eventName': 'Art Exhibition',
-          'eventDate': 'December 15, 2024',
-          'eventDescription': 'An exhibition showcasing student art.',
-          'eventImage': 'assets/images/test1.jpg',
-          'status': 'upcoming', // Added status
-        },
-        {
-          'eventName': 'Painting Workshop',
-          'eventDate': 'January 5, 2025',
-          'eventDescription': 'A workshop to improve painting skills.',
-          'eventImage': 'assets/images/test2.jpg',
-          'status': 'upcoming', // Added status
-        },
-        {
-          'eventName': 'Craft Fair',
-          'eventDate': 'February 20, 2025',
-          'eventDescription': 'A fair where art and craft works will be displayed for sale.',
-          'eventImage': 'assets/images/test3.jpg',
-          'status': 'upcoming', // Added status
-        },
-        {
-          'eventName': 'Sketching Session',
-          'eventDate': 'March 10, 2025',
-          'eventDescription': 'An open session for sketching and exploring different techniques.',
-          'eventImage': 'assets/images/test4.jpg',
-          'status': 'upcoming', // Added status
-        },
-      ],
-    },
-    {
-      'image': 'assets/images/sports_club.jpg',
-      'name': 'Sports Club',
-      'description': 'Stay active with various sports activities.',
-      'events': [
-        {
-          'eventName': 'Art Exhibition',
-          'eventDate': 'December 15, 2024',
-          'eventDescription': 'An exhibition showcasing student art.',
-          'eventImage': 'assets/images/test1.jpg',
-          'status': 'upcoming', // Added status
-        },
-        {
-          'eventName': 'Painting Workshop',
-          'eventDate': 'January 5, 2025',
-          'eventDescription': 'A workshop to improve painting skills.',
-          'eventImage': 'assets/images/test2.jpg',
-          'status': 'upcoming', // Added status
-        },
-        {
-          'eventName': 'Craft Fair',
-          'eventDate': 'February 20, 2025',
-          'eventDescription': 'A fair where art and craft works will be displayed for sale.',
-          'eventImage': 'assets/images/test3.jpg',
-          'status': 'upcoming', // Added status
-        },
-        {
-          'eventName': 'Sketching Session',
-          'eventDate': 'March 10, 2025',
-          'eventDescription': 'An open session for sketching and exploring different techniques.',
-          'eventImage': 'assets/images/test4.jpg',
-          'status': 'upcoming', // Added status
-        },
-      ],
-    },
-  ];
 
+
+  Future<List<ClubModel>?> getClubs(BuildContext context) async {
+    return await ApiClient().getClubs(context);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -161,120 +26,144 @@ class _ClubScreenState extends State<ClubScreen> {
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [Color(0xff8c0000), Color(0xffda2851)], // Gradient colors
+            colors:[Color(0xff154973), Color(0xff0f65a5)],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
         ),
-        child: Column(
-          children: [
-            SizedBox(height: 20,),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        child: FutureBuilder<List<ClubModel>?>(
+          future: getClubs(context),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator(
+                color: Colors.white,
+              ));
+            } else if (snapshot.hasError) {
+              return Center(
+                child: Text(
+                  'Error: ${snapshot.error}',
+                  style: TextStyle(color: Colors.red),
+                ),
+              );
+            } else if (!snapshot.hasData || snapshot.data == null) {
+              return Center(
+                child: Text(
+                  'No data available.',
+                  style: TextStyle(color: Colors.grey),
+                ),
+              );
+            }
+            final List<ClubModel> clubs = snapshot.data!;
+            return Column(
               children: [
-                IconButton(
-                  icon: Icon(Icons.arrow_back, color: Colors.white),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                ),
-                Text(
-                  'CLUBS',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                IconButton(
-                  icon: Icon(Icons.arrow_back, color: Colors.transparent),
-                  onPressed: () {
-                  },
-                ),
-              ],
-
-            ),
-            const SizedBox(height: 10),
-            Expanded(
-              child: PageView.builder(
-                controller: _controller,
-                itemCount: clubs.length,
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: InkWell(
-                      onTap: () {
-                        // Navigate to the ClubDetailsScreen and pass the image, name, and description
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ClubDetailsScreen(
-                              imageName: clubs[index]['image']!,
-                              name: clubs[index]['name']!,
-                              description: clubs[index]['description']!,
-                              events: clubs[index]['events']!,  // Pass events as an argument
-                            ),
-                          ),
-
-                        );
+                SizedBox(height: 40,),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.arrow_back, color: Colors.white),
+                      onPressed: () {
+                        Navigator.pop(context);
                       },
-                      child: Card(
+                    ),
+                    Text(
+                      'CLUBS',
+                      style: TextStyle(
                         color: Colors.white,
-                        elevation: 5,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(16), // Adjust the radius as needed
-                                child: Image.asset(
-                                  clubs[index]['image']!,
-                                  height: 300,
-                                  width: double.infinity,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-
-                              const SizedBox(height: 16),
-                              Text(
-                                clubs[index]['name']!,
-                                style: const TextStyle(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                clubs[index]['description']!,
-                                textAlign: TextAlign.center,
-                                style: const TextStyle(fontSize: 16),
-                              ),
-                            ],
-                          ),
-                        ),
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                  );
-                },
-              ),
-            ),
+                    IconButton(
+                      icon: Icon(Icons.arrow_back, color: Colors.transparent),
+                      onPressed: () {
+                      },
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                Expanded(
+                  child: PageView.builder(
+                    controller: _controller,
+                    itemCount: clubs.length,
+                    itemBuilder: (context, index) {
+                      return Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ClubDetailsScreen(
+                                  imageName: clubs[index].clubLogoUrl!,
+                                  name: clubs[index].clubName!,
+                                  description: clubs[index].clubDescription!,
+                                  events: clubs[index].events!,
+                                ),
+                              ),
 
-            SmoothPageIndicator(
-              controller: _controller,
-              count: clubs.length,
-              effect: const WormEffect(
-                dotHeight: 8,
-                dotWidth: 8,
-                activeDotColor: Colors.white,
-                dotColor: Colors.black26,
-              ),
-            ),
-            const SizedBox(height: 16),
-          ],
+                            );
+                          },
+                          child: Card(
+                            color: Colors.white,
+                            elevation: 5,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(16),
+                                    child:
+                                    Image.network(
+                                      clubs[index].clubLogoUrl!,
+                                      height: 300,
+                                      width: double.infinity,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+
+                                  const SizedBox(height: 16),
+                                  Text(
+                                    clubs[index].clubName!,
+                                    style: const TextStyle(
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    clubs[index].clubDescription!,
+                                    textAlign: TextAlign.center,
+                                    style: const TextStyle(fontSize: 16),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+
+                SmoothPageIndicator(
+                  controller: _controller,
+                  count: clubs.length,
+                  effect: const WormEffect(
+                    dotHeight: 8,
+                    dotWidth: 8,
+                    activeDotColor: Colors.white,
+                    dotColor: Colors.black26,
+                  ),
+                ),
+                const SizedBox(height: 16),
+              ],
+            );
+          },
         ),
       ),
     );

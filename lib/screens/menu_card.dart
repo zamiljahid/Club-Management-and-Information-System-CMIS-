@@ -4,28 +4,23 @@ import 'package:flutter/material.dart';
 class MenuCard extends StatelessWidget {
   final String name;
   final IconData icon;
-  final Widget screen;
+  final Function() onPressed;
 
   const MenuCard({
     Key? key,
     required this.name,
     required this.icon,
-    required this.screen,
+    required this.onPressed,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => screen),
-        );
-      },
+      onTap: onPressed,
       child: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [Color(0xff8c0000), Color(0xffda2851)], // Gradient colors
+            colors: [Color(0xff154973), Color(0xff0f65a5)], // Gradient colors
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
