@@ -1,3 +1,5 @@
+import 'package:club_management_and_information_system/api/api_client.dart';
+import 'package:club_management_and_information_system/screens/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
@@ -7,12 +9,14 @@ import '../shared_preference.dart';
 class ClubDetailsScreen extends StatelessWidget {
   String? imageName;
   String? name;
+  int? clubId;
   String? description;
   List<EventModel>? events;
 
   ClubDetailsScreen({
     this.imageName,
     this.name,
+    this.clubId,
     this.description,
     this.events,
   });
@@ -122,50 +126,101 @@ class ClubDetailsScreen extends StatelessWidget {
                   if (ongoingEvents.isNotEmpty)
                     _buildEventCategory('Ongoing Events', ongoingEvents),
                 ],
-                const SizedBox(height: 20),
-                SharedPrefs.getString('role_id') == '2' ||
-                    SharedPrefs.getString('role_id') == '3'
-                    ? Center(
-                  child: Text(
-                    "Executive Position holders of a club cannot register for another club",
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.redAccent,
+                if(SharedPrefs.getString('role_id') !='1')...[
+                  const SizedBox(height: 20),
+                  SharedPrefs.getString('role_id') == '2' ||
+                      SharedPrefs.getString('role_id') == '3'
+                      ? Center(
+                    child: Text(
+                      "Executive Position holders of a club cannot register for another club",
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.redAccent,
+                      ),
+                      textAlign: TextAlign.center,
                     ),
-                    textAlign: TextAlign.center,
-                  ),
-                )
-                    : Container(
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [Color(0xff0f65a5), Color(0xff154973)],
-                    ),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: Colors.white, // White border
-                      width: 2, // Border thickness
-                    ),
-                  ),
-                  child: TextButton(
-                    onPressed: () {
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 16.0),
-                      child: Text(
-                        "Register as a General Member Now",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
+                  )
+                      : Container(
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [Color(0xff0f65a5), Color(0xff154973)],
+                      ),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: Colors.white, // White border
+                        width: 2, // Border thickness
                       ),
                     ),
-                  ),
-                )
+                    child: TextButton(
+                      onPressed: () async {
+                        var response = await ApiClient().getMemberRegistered(
+                            '?userId=${SharedPrefs.getString('id')}&clubId=${clubId}',
+                            context
+                        );
+                        if (response != null) {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: Text('Response'),
+                                content: Text(response.message ?? 'No message received'),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                      if (response.message == "Success") {
+                                        SharedPrefs.remove('access_token');
+                                        Navigator.pushReplacement(
+                                          context,
+                                          MaterialPageRoute(builder: (context) => SplashScreen()),
+                                        );
+                                        final snackBar = SnackBar(
+                                          backgroundColor: Colors.white,
+                                          content: const Text(
+                                            "You have been logged out. Please log in again.",
+                                            style: TextStyle(color: Color(0xff0f65a5)),
+                                          ),
+                                          duration: const Duration(seconds: 3),
+                                        );
+                                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                                      }
+                                    },
+                                    child: Text('OK'),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        } else {
+                          final snackBar = SnackBar(
+                            content: Text(
+                              "Failed to register or invalid response: ${response?.message ?? 'Unknown error'}",
+                              style: TextStyle(color: Color(0xff0f65a5)),
+                            ),
+                            duration: const Duration(seconds: 3),
+                          );
+                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                        }
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 16.0),
+                        child: Text(
+                          "Register as a General Member Now",
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    )
+
+                  )
+                ]
               ],
             ),
           ),

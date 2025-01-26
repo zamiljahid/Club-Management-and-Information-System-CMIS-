@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 
 import '../screens/announcement_screen.dart';
 import '../screens/my_club_screen.dart';
+import '../screens/my_task_screen.dart';
 import '../screens/splash_screen.dart';
 import 'routes_names.dart';
 
@@ -43,7 +44,7 @@ class RouterGenerator {
         );
       case RouteConstantName.myTaskScreen:
         return MaterialPageRoute(
-          builder: (context) =>  ClubDetailsScreen(),
+          builder: (context) =>  MyTaskScreen(),
         );
       case RouteConstantName.eventScreen:
         return MaterialPageRoute(

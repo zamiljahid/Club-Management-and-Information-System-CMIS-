@@ -148,38 +148,6 @@ class DrawerWidget extends StatelessWidget {
                         );
                       },
                     )
-
-
-
-
-                    // ListView.builder(
-                    //   itemCount: dashboardList.length,
-                    //   itemBuilder: (context, index) {
-                    //     final item = dashboardList[index];
-                    //     return ListTile(
-                    //       leading: Icon(
-                    //         item['icon'],
-                    //         color: Colors.white, // Set icon color to white
-                    //         size: 30, // Increase icon size
-                    //       ),
-                    //       title: Text(
-                    //         item['name'],
-                    //         style: const TextStyle(
-                    //           color: Colors.white, // Set text color to white
-                    //           fontSize: 18, // Increase text size
-                    //           fontWeight: FontWeight.bold, // Make text bold for better visibility
-                    //         ),
-                    //       ),
-                    //       onTap: () {
-                    //         // Navigator.pop(context);
-                    //         Navigator.push(
-                    //           context,
-                    //           MaterialPageRoute(builder: (context) => item['screen']),
-                    //         );
-                    //       },
-                    //     );
-                    //   },
-                    // ),
                   ),
                   const Divider(
                     color: Colors.white70,
@@ -200,7 +168,6 @@ class DrawerWidget extends StatelessWidget {
                       ),
                     ),
                     onTap: () {
-                      // Show confirmation dialog
                       showDialog(
                         context: context,
                         builder: (BuildContext context) {
@@ -215,7 +182,6 @@ class DrawerWidget extends StatelessWidget {
                                 },
                                 child: const Text("Cancel"),
                               ),
-                              // Confirm button
                               TextButton(
                                 onPressed: () {
                                   SharedPrefs.remove('access_token');

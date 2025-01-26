@@ -51,10 +51,10 @@ class _SplashScreenState extends State<SplashScreen>
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Container(
-                        padding: EdgeInsets.all(8), // Border width
+                        padding: EdgeInsets.all(8),
                         decoration: BoxDecoration(
                             gradient: LinearGradient(
-                              colors: [Color(0xffffffff), Color(0xffffffff)],
+                              colors: [Color(0xff154973), Color(0xff0f65a5)],
                             ),
                             shape: BoxShape.circle),
                         child: ClipOval(

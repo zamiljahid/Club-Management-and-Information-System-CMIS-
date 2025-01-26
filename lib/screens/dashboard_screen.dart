@@ -224,6 +224,17 @@ class HomeWidget extends StatelessWidget {
                   'Dashboard',
                   style: TextStyle(color: Colors.white),
                 ),
+                actions: [
+                  Container(
+                    height: 75,
+                    width: 75,
+                    child: Image.asset(
+                      'assets/logo.png',
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  SizedBox(width: 5,)
+                ],
                 leading: GestureDetector(
                   behavior: HitTestBehavior.opaque,
                   onTap: openDrawer,
@@ -232,7 +243,6 @@ class HomeWidget extends StatelessWidget {
                     color: Colors.white,
                   ),
                 ),
-                // Apply gradient directly to flexibleSpace
                 flexibleSpace: Container(
                   decoration: const BoxDecoration(
                     gradient: LinearGradient(

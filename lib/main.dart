@@ -1,5 +1,6 @@
 import 'package:club_management_and_information_system/routes/routes.dart';
 import 'package:club_management_and_information_system/screens/election_screen.dart';
+import 'package:club_management_and_information_system/screens/my_task_screen.dart';
 import 'package:club_management_and_information_system/screens/splash_screen.dart';
 
 import 'package:club_management_and_information_system/shared_preference.dart';
@@ -31,7 +32,7 @@ class MainClassState extends State<MainClass> {
     return  MaterialApp(
       debugShowCheckedModeBanner: false,
       onGenerateRoute: RouterGenerator.generateRoute,
-      home: ElectionScreen(),
+      home: SplashScreen(),
     );
   }
 

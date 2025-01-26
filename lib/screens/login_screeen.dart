@@ -1,22 +1,24 @@
 import 'package:club_management_and_information_system/api/api_client.dart';
-import 'package:club_management_and_information_system/screens/club_screen.dart';
 import 'package:club_management_and_information_system/screens/dashboard_screen.dart';
 import 'package:flutter/material.dart';
 
 import '../shared_preference.dart';
 
-class LoginScreen extends StatelessWidget{
+class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
 
-  final String staticEmail = "1234";
-  final String staticPassword = "1234";
+  @override
+  _LoginScreenState createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+
+  bool _isObscure = true;
+  final TextEditingController loginController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    final TextEditingController loginController = TextEditingController();
-    final TextEditingController passwordController = TextEditingController();
-
-
     void handleLogin() async {
       final String loginID = loginController.text.trim();
       final String password = passwordController.text.trim();
@@ -88,141 +90,160 @@ class LoginScreen extends StatelessWidget{
     }
 
     return Scaffold(
-    body: Stack(
-      children: [
-        Container(
-          height: double.infinity,
-          width: double.infinity,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-                colors:[Color(0xff154973),Color(0xff0f65a5)]
-            ),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.only(top: 60.0,left: 15),
-
-            child:
-            Column(
-              children: [
-                Text('Welcome To!',style: TextStyle(
-                    fontSize: 30,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold
-                ),
-                ),
-            SizedBox(height: 10,),
-            Text('Club Management & Information System',style: TextStyle(
-                    fontSize: 17,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold
-                ),
-                ),
-              ],
-
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(top: 200.0),
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(40),
-                topRight: Radius.circular(40)
-              ),
-              color: Colors.white,
-            ),
+      body: Stack(
+        children: [
+          Container(
             height: double.infinity,
             width: double.infinity,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xff154973), Color(0xff0f65a5)],
+              ),
+            ),
             child: Padding(
-              padding: EdgeInsets.only(left: 18.0,right: 18),
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(height: 40,),
-                    Container(
-                      padding: EdgeInsets.all(8), // Border width
-                      decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors:[Color(0xff154973),Color(0xff0f65a5)],),
-                           shape: BoxShape.circle),
-                      child: ClipOval(
-                        child: SizedBox.fromSize(
-                          size: Size.fromRadius(80), // Image radius
-                          child: Image.asset('assets/appIcon.jpg', fit: BoxFit.cover),
-                        ),
-                      ),
+              padding: const EdgeInsets.only(top: 60.0, left: 15),
+              child: Column(
+                children: [
+                  Text(
+                    'Welcome To!',
+                    style: TextStyle(
+                      fontSize: 30,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
                     ),
-                    SizedBox(height: 50,),
-                    TextField(
-                      controller: loginController,
-                      decoration: InputDecoration(
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                              width: 2, color: Colors.blueAccent),
-                        ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                                width: 2, color: Color(0xff154973)),
-                          ),
-                        suffixIcon: Icon(Icons.person,color:  Color(0xff154973),),
-                        label: Text('Login ID',style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xff154973),
-
-                        ),)
-                      ),
+                  ),
+                  SizedBox(height: 10),
+                  Text(
+                    'Club Management & Information System',
+                    style: TextStyle(
+                      fontSize: 17,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
                     ),
-                    SizedBox(height: 10,),
-                    TextField(
-                      controller: passwordController,
-                      decoration: InputDecoration(
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                                width: 2, color: Colors.blueAccent),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                                width: 2, color:Color(0xff154973)),
-                          ),
-                          suffixIcon: Icon(Icons.visibility_off,color:Color(0xff154973),),
-                          label: Text('Password',style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xff154973),
-                          ),)
-                      ),
-                    ),
-                    SizedBox(height: 70,),
-                    GestureDetector(
-                      onTap: (){
-                        handleLogin();
-                      },
-                      child: Container(
-                        height: 55,
-                          width: 300,
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(top: 200.0),
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(40),
+                  topRight: Radius.circular(40),
+                ),
+                color: Colors.white,
+              ),
+              height: double.infinity,
+              width: double.infinity,
+              child: Padding(
+                padding: EdgeInsets.only(left: 18.0, right: 18),
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(height: 40),
+                      Container(
+                        padding: EdgeInsets.all(8), // Border width
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(30),
                           gradient: LinearGradient(
-                              colors:
-                              [Color(0xff154973), Color(0xff0f65a5)
-                              ]),
+                            colors: [Color(0xff154973), Color(0xff0f65a5)],
+                          ),
+                          shape: BoxShape.circle,
                         ),
-                        child: Center(child: Text('SIGN IN',style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20,
-                          color: Colors.white
-                        ),),),
+                        child: ClipOval(
+                          child: SizedBox.fromSize(
+                            size: Size.fromRadius(80), // Image radius
+                            child: Image.asset('assets/appIcon.jpg', fit: BoxFit.cover),
+                          ),
+                        ),
                       ),
-                    )
-                  ],
+                      SizedBox(height: 50),
+                      TextField(
+                        controller: loginController,
+                        decoration: InputDecoration(
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(width: 2, color: Colors.blueAccent),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(width: 2, color: Color(0xff154973)),
+                          ),
+                          suffixIcon: Icon(Icons.person, color: Color(0xff154973)),
+                          label: Text(
+                            'Login ID',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xff154973),
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 10),
+                      TextField(
+                        controller: passwordController,
+                        obscureText: _isObscure, // Toggle password visibility
+                        decoration: InputDecoration(
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(width: 2, color: Colors.blueAccent),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(width: 2, color: Color(0xff154973)),
+                          ),
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _isObscure ? Icons.visibility_off : Icons.visibility,
+                              color: Color(0xff154973),
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _isObscure = !_isObscure; // Toggle the visibility state
+                              });
+                            },
+                          ),
+                          label: Text(
+                            'Password',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xff154973),
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 70),
+                      GestureDetector(
+                        onTap: () {
+                          handleLogin();
+                        },
+                        child: Container(
+                          height: 55,
+                          width: 300,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(30),
+                            gradient: LinearGradient(
+                              colors: [Color(0xff154973), Color(0xff0f65a5)],
+                            ),
+                          ),
+                          child: Center(
+                            child: Text(
+                              'SIGN IN',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
           ),
-        )
-      ],
-    )
-  );
+        ],
+      ),
+    );
   }
 }

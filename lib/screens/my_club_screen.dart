@@ -1,3 +1,4 @@
+import 'package:club_management_and_information_system/screens/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
@@ -17,6 +18,35 @@ class _MyClubScreenState extends State<MyClubScreen> {
     return await ApiClient().getClubs(context);
   }
 
+  Future<String> _updateUserRole(
+      BuildContext context, String userID, String action) async {
+    try {
+      String? message =
+          await ApiClient().updateMemberRole(userID, action, context);
+
+      showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: Text(message ?? "Action completed"),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(ctx).pop();
+              },
+              child: const Text("Okay"),
+            ),
+          ],
+        ),
+      );
+
+      // Return the message to the caller
+      return message ?? "Unknown error occurred";
+    } catch (e) {
+      // Handle any errors and return an error message
+      return "Error: ${e.toString()}";
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,256 +60,350 @@ class _MyClubScreenState extends State<MyClubScreen> {
           ),
         ),
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: FutureBuilder<List<ClubModel>?>(
-            future: getClubs(context),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(
-                  child: CircularProgressIndicator(
-                    color: Colors.white,
-                  ),
-                );
-              } else if (snapshot.hasError) {
-                return Center(
-                  child: Text(
-                    'Error: ${snapshot.error}',
-                    style: TextStyle(color: Colors.red),
-                  ),
-                );
-              } else if (!snapshot.hasData || snapshot.data == null) {
-                return Center(
-                  child: Text(
-                    'No data available.',
-                    style: TextStyle(color: Colors.grey),
-                  ),
-                );
-              }
+            padding: const EdgeInsets.all(16.0),
+            child: FutureBuilder<List<ClubModel>?>(
+              future: getClubs(context),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(
+                    child: CircularProgressIndicator(
+                      color: Colors.white,
+                    ),
+                  );
+                } else if (snapshot.hasError) {
+                  return Center(
+                    child: Text(
+                      'Error: ${snapshot.error}',
+                      style: TextStyle(color: Colors.red),
+                    ),
+                  );
+                } else if (!snapshot.hasData || snapshot.data == null) {
+                  return Center(
+                    child: Text(
+                      'No data available.',
+                      style: TextStyle(color: Colors.grey),
+                    ),
+                  );
+                }
 
-              final List<ClubModel> clubs = snapshot.data!;
-              final ClubModel? selectedClub = clubs.cast<ClubModel?>().firstWhere(
-                    (club) => club?.clubId == SharedPrefs.getInt('club_id'),
-                orElse: () => null,
-              );
+                final List<ClubModel> clubs = snapshot.data!;
+                final ClubModel? selectedClub =
+                    clubs.cast<ClubModel?>().firstWhere(
+                          (club) =>
+                              club?.clubId == SharedPrefs.getInt('club_id'),
+                          orElse: () => null,
+                        );
 
-              if (selectedClub == null) {
-                return Center(
-                  child: Text(
-                    'Club with ID 2 not found.',
-                    style: TextStyle(color: Colors.grey),
-                  ),
-                );
-              }
+                if (selectedClub == null) {
+                  return Center(
+                    child: Text(
+                      'Club with ID 2 not found.',
+                      style: TextStyle(color: Colors.grey),
+                    ),
+                  );
+                }
 
-              final String? imageName = selectedClub.clubLogoUrl;
-              final String? name = selectedClub.clubName;
-              final String? description = selectedClub.clubDescription;
-              final List<EventModel> previousEvents = selectedClub.events!
-                  .where((event) => event.status == 'Previous Event')
-                  .toList();
-              final List<EventModel> upcomingEvents = selectedClub.events!
-                  .where((event) => event.status == 'Upcoming Event')
-                  .toList();
-              final List<EventModel> ongoingEvents = selectedClub.events!
-                  .where((event) => event.status == 'On Going Event')
-                  .toList();
-              return FutureBuilder<List<ClubMembersModel>?>(
-                future: ApiClient().getClubMembers(selectedClub.clubId!, context),
-                builder: (context, membersSnapshot) {
-                  if (membersSnapshot.connectionState == ConnectionState.waiting) {
-                    return Center(
-                      child: CircularProgressIndicator(
-                        color: Colors.white,
-                      ),
-                    );
-                  } else if (membersSnapshot.hasError) {
-                    return Center(
-                      child: Text(
-                        'Error: ${membersSnapshot.error}',
-                        style: TextStyle(color: Colors.red),
-                      ),
-                    );
-                  } else if (!membersSnapshot.hasData || membersSnapshot.data == null) {
-                    return Center(
-                      child: Text(
-                        'No members found.',
-                        style: TextStyle(color: Colors.grey),
-                      ),
-                    );
-                  }
-                  final List<ClubMembersModel> clubMembers = membersSnapshot.data!;
-                  final filteredMembers = clubMembers
-                      .where((member) => member.id != SharedPrefs.getString('id'))
-                      .toList();
+                final String? imageName = selectedClub.clubLogoUrl;
+                final String? name = selectedClub.clubName;
+                final String? description = selectedClub.clubDescription;
+                final List<EventModel> previousEvents = selectedClub.events!
+                    .where((event) => event.status == 'Previous Event')
+                    .toList();
+                final List<EventModel> upcomingEvents = selectedClub.events!
+                    .where((event) => event.status == 'Upcoming Event')
+                    .toList();
+                final List<EventModel> ongoingEvents = selectedClub.events!
+                    .where((event) => event.status == 'On Going Event')
+                    .toList();
+                return FutureBuilder<List<ClubMembersModel>?>(
+                  future:
+                      ApiClient().getClubMembers(selectedClub.clubId!, context),
+                  builder: (context, membersSnapshot) {
+                    if (membersSnapshot.connectionState ==
+                        ConnectionState.waiting) {
+                      return Center(
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                        ),
+                      );
+                    } else if (membersSnapshot.hasError) {
+                      return Center(
+                        child: Text(
+                          'Error: ${membersSnapshot.error}',
+                          style: TextStyle(color: Colors.red),
+                        ),
+                      );
+                    } else if (!membersSnapshot.hasData ||
+                        membersSnapshot.data == null) {
+                      return Center(
+                        child: Text(
+                          'No members found.',
+                          style: TextStyle(color: Colors.grey),
+                        ),
+                      );
+                    }
+                    final List<ClubMembersModel> clubMembers =
+                        membersSnapshot.data!;
+                    final filteredMembers = clubMembers
+                        .where((member) =>
+                            member.id != SharedPrefs.getString('id'))
+                        .toList();
 
-                  return Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              IconButton(
-                                icon: Icon(Icons.arrow_back, color: Colors.white),
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                },
-                              ),
-                              Spacer(),
-                              Text(
-                                "Club Details",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 28,
-                                  fontWeight: FontWeight.bold,
+                    return Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                IconButton(
+                                  icon: Icon(Icons.arrow_back,
+                                      color: Colors.white),
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
                                 ),
-                              ),
-                              Spacer(),
-                              SizedBox(width: 10),
-                            ],
-                          ),
-                        ),
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(20),
-                          child: Image.network(
-                            imageName ?? '',
-                            height: 300,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                        SizedBox(height: 20),
-                        Text(
-                          name ?? '',
-                          style: TextStyle(
-                            fontSize: 32,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                            shadows: [
-                              Shadow(
-                                blurRadius: 10,
-                                color: Colors.black38,
-                                offset: Offset(2, 2),
-                              ),
-                            ],
-                          ),
-                        ),
-                        SizedBox(height: 10),
-                        Container(
-                          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.9),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Text(
-                            description ?? '',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.black87,
+                                Spacer(),
+                                Text(
+                                  "Club Details",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 28,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                Spacer(),
+                                SizedBox(width: 10),
+                              ],
                             ),
-                            textAlign: TextAlign.center,
                           ),
-                        ),
-                        SizedBox(height: 20),
-                        if (previousEvents.isNotEmpty)
-                          _buildEventCategory('Previous Events', previousEvents),
-                        if (upcomingEvents.isNotEmpty)
-                          _buildEventCategory('Upcoming Events', upcomingEvents),
-                        if (ongoingEvents.isNotEmpty)
-                          _buildEventCategory('Ongoing Events', ongoingEvents),
-                        SizedBox(height: 20),
-                        if (SharedPrefs.getString('role_id') == '2' && clubMembers.isNotEmpty)...[
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(20),
+                            child: Image.network(
+                              imageName ?? '',
+                              height: 300,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          SizedBox(height: 20),
                           Text(
-                            "Club Members",
+                            name ?? '',
                             style: TextStyle(
-                              fontSize: 24,
+                              fontSize: 32,
                               fontWeight: FontWeight.bold,
                               color: Colors.white,
+                              shadows: [
+                                Shadow(
+                                  blurRadius: 10,
+                                  color: Colors.black38,
+                                  offset: Offset(2, 2),
+                                ),
+                              ],
                             ),
                           ),
                           SizedBox(height: 10),
-                          Center(
-                            child: Card(
-                              color: Colors.white,
-                              elevation: 8.0,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 10),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.9),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Text(
+                              description ?? '',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.black87,
                               ),
-                              child: SingleChildScrollView(
-                                scrollDirection: Axis.horizontal,
-                                child: DataTable(
-                                  columns: [
-                                    DataColumn(label: Text('Rank', style: TextStyle(color: Color(0xff154973), fontWeight: FontWeight.bold))),
-                                    DataColumn(label: Text('Name', style: TextStyle(color: Color(0xff154973), fontWeight: FontWeight.bold))),
-                                    DataColumn(label: Text('ID', style: TextStyle(color: Color(0xff154973), fontWeight: FontWeight.bold))),
-                                    DataColumn(label: Text('Position', style: TextStyle(color: Color(0xff154973), fontWeight: FontWeight.bold))),
-                                    DataColumn(label: Text('Contact', style: TextStyle(color: Color(0xff154973), fontWeight: FontWeight.bold))),
-                                  ],
-                                  rows: filteredMembers.asMap().entries.map((entry) {
-                                    int index = entry.key + 1;
-                                    ClubMembersModel member = entry.value;
-                                    return DataRow(
-                                      cells: [
-                                        DataCell(Text('$index', style: TextStyle(color: Colors.black))),
-                                        DataCell(Text(member.memberName ?? '', style: TextStyle(color: Colors.black))),
-                                        DataCell(Text(member.id ?? '', style: TextStyle(color: Colors.black))),
-                                        DataCell(Text(member.position ?? '', style: TextStyle(color: Colors.black))),
-                                        DataCell(Text(member.contact ?? '', style: TextStyle(color: Colors.black))),
-                                      ],
-                                      onLongPress: () {
-                                        showModalBottomSheet(
-                                          backgroundColor: Colors.transparent,
-                                          context: context,
-                                          builder: (context) {
-                                            return Padding(
-                                              padding: const EdgeInsets.all(8.0),
-                                              child: SpeedDial(
-                                                icon: Icons.fingerprint,
-                                                backgroundColor: Color(0xff154973),
-                                                foregroundColor: Colors.white,
-                                                children: [
-                                                  SpeedDialChild(
-                                                    child: Icon(Icons.remove, color: Colors.white,),
-                                                    label: 'Remove',
-                                                    labelBackgroundColor: Color(0xff154973),
-                                                    labelStyle: TextStyle(color: Colors.white),
-                                                    backgroundColor: Color(0xff154973),
-                                                    onTap: () {
-                                                    },
-                                                  ),
-                                                  SpeedDialChild(
-                                                    child: Icon(Icons.arrow_downward, color: Colors.white),
-                                                    label: 'Demote',
-                                                    labelBackgroundColor: Color(0xff154973),
-                                                    labelStyle: TextStyle(color: Colors.white),
-                                                    backgroundColor: Color(0xff154973),
-                                                    onTap: () {
-                                                    },
-                                                  ),
-                                                  SpeedDialChild(
-                                                    child: Icon(Icons.arrow_upward, color: Colors.white),
-                                                    label: 'Promote',
-                                                    labelBackgroundColor: Color(0xff154973),
-                                                    backgroundColor: Color(0xff154973),
-                                                    labelStyle: TextStyle(color: Colors.white),
-                                                    onTap: () {
-                                                    },
-                                                  ),
-                                                ],
-                                              ),
-                                            );
-                                          },
-                                        );
-                                      },
-                                    );
-                                  }).toList(),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                          SizedBox(height: 20),
+                          if (previousEvents.isNotEmpty)
+                            _buildEventCategory(
+                                'Previous Events', previousEvents),
+                          if (upcomingEvents.isNotEmpty)
+                            _buildEventCategory(
+                                'Upcoming Events', upcomingEvents),
+                          if (ongoingEvents.isNotEmpty)
+                            _buildEventCategory(
+                                'Ongoing Events', ongoingEvents),
+                          SizedBox(height: 20),
+                          if (SharedPrefs.getString('role_id') == '2' &&
+                              clubMembers.isNotEmpty) ...[
+                            Text(
+                              "Club Members",
+                              style: TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                            SizedBox(height: 10),
+                            Center(
+                              child: Card(
+                                color: Colors.white,
+                                elevation: 8.0,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: SingleChildScrollView(
+                                  scrollDirection: Axis.horizontal,
+                                  child: DataTable(
+                                    columns: [
+                                      DataColumn(
+                                          label: Text('Rank',
+                                              style: TextStyle(
+                                                  color: Color(0xff154973),
+                                                  fontWeight:
+                                                      FontWeight.bold))),
+                                      DataColumn(
+                                          label: Text('Name',
+                                              style: TextStyle(
+                                                  color: Color(0xff154973),
+                                                  fontWeight:
+                                                      FontWeight.bold))),
+                                      DataColumn(
+                                          label: Text('ID',
+                                              style: TextStyle(
+                                                  color: Color(0xff154973),
+                                                  fontWeight:
+                                                      FontWeight.bold))),
+                                      DataColumn(
+                                          label: Text('Position',
+                                              style: TextStyle(
+                                                  color: Color(0xff154973),
+                                                  fontWeight:
+                                                      FontWeight.bold))),
+                                      DataColumn(
+                                          label: Text('Contact',
+                                              style: TextStyle(
+                                                  color: Color(0xff154973),
+                                                  fontWeight:
+                                                      FontWeight.bold))),
+                                    ],
+                                    rows: filteredMembers
+                                        .asMap()
+                                        .entries
+                                        .map((entry) {
+                                      int index = entry.key + 1;
+                                      ClubMembersModel member = entry.value;
+                                      return DataRow(
+                                        cells: [
+                                          DataCell(Text('$index',
+                                              style: TextStyle(
+                                                  color: Colors.black))),
+                                          DataCell(Text(member.memberName ?? '',
+                                              style: TextStyle(
+                                                  color: Colors.black))),
+                                          DataCell(Text(member.id ?? '',
+                                              style: TextStyle(
+                                                  color: Colors.black))),
+                                          DataCell(Text(member.position ?? '',
+                                              style: TextStyle(
+                                                  color: Colors.black))),
+                                          DataCell(Text(member.contact ?? '',
+                                              style: TextStyle(
+                                                  color: Colors.black))),
+                                        ],
+                                        onLongPress: () {
+                                          showModalBottomSheet(
+                                            backgroundColor: Colors.transparent,
+                                            context: context,
+                                            builder: (context) {
+                                              return Padding(
+                                                padding:
+                                                    const EdgeInsets.all(8.0),
+                                                child: SpeedDial(
+                                                  icon: Icons.fingerprint,
+                                                  backgroundColor:
+                                                      Color(0xff154973),
+                                                  foregroundColor: Colors.white,
+                                                  children: [
+                                                    SpeedDialChild(
+                                                      child: Icon(
+                                                        Icons.remove,
+                                                        color: Colors.white,
+                                                      ),
+                                                      label: 'Remove',
+                                                      labelBackgroundColor:
+                                                          Color(0xff154973),
+                                                      labelStyle: TextStyle(
+                                                          color: Colors.white),
+                                                      backgroundColor:
+                                                          Color(0xff154973),
+                                                      onTap: () {
+                                                        _updateUserRole(
+                                                            context,
+                                                            member.id!,
+                                                            'Remove');
+                                                        setState(() {});
+                                                      },
+                                                    ),
+                                                    if (member.position !=
+                                                        'General Member')
+                                                      SpeedDialChild(
+                                                        child: Icon(
+                                                            Icons
+                                                                .arrow_downward,
+                                                            color:
+                                                                Colors.white),
+                                                        label: 'Demote',
+                                                        labelBackgroundColor:
+                                                            Color(0xff154973),
+                                                        labelStyle: TextStyle(
+                                                            color:
+                                                                Colors.white),
+                                                        backgroundColor:
+                                                            Color(0xff154973),
+                                                        onTap: () {
+                                                          _updateUserRole(
+                                                              context,
+                                                              member.id!,
+                                                              'Demote');
+                                                          setState(() {});
+                                                        },
+                                                      ),
+                                                    if (member.position !=
+                                                        'Executive Member')
+                                                      SpeedDialChild(
+                                                        child: Icon(
+                                                            Icons.arrow_upward,
+                                                            color:
+                                                                Colors.white),
+                                                        label: 'Promote',
+                                                        labelBackgroundColor:
+                                                            Color(0xff154973),
+                                                        backgroundColor:
+                                                            Color(0xff154973),
+                                                        labelStyle: TextStyle(
+                                                            color:
+                                                                Colors.white),
+                                                        onTap: () {
+                                                          _updateUserRole(
+                                                              context,
+                                                              member.id!,
+                                                              'Promote');
+                                                          setState(() {});
+                                                        },
+                                                      ),
+                                                  ],
+                                                ),
+                                              );
+                                            },
+                                          );
+                                        },
+                                      );
+                                    }).toList(),
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                          SizedBox(height: 15),
+                            SizedBox(height: 15),
+                          ],
                           Container(
                             width: double.infinity,
                             decoration: BoxDecoration(
@@ -295,10 +419,65 @@ class _MyClubScreenState extends State<MyClubScreen> {
                               ),
                             ),
                             child: TextButton(
-                              onPressed: () {
+                              onPressed: () async {
+                                final shouldLeaveClub = await showDialog<bool>(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: Text("Confirm Leave"),
+                                      content: Text(
+                                          "Are you sure you want to leave this club?"),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.pop(context,
+                                                false); // User chooses not to leave
+                                          },
+                                          child: Text("Cancel"),
+                                        ),
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.pop(context,
+                                                true); // User confirms to leave
+                                          },
+                                          child: Text("Leave"),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                                if (shouldLeaveClub == true) {
+                                  String result = await _updateUserRole(context,
+                                      SharedPrefs.getString('id')!, 'Remove');
+                                  if (result == "Success") {
+                                    SharedPrefs.remove('access_token');
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => SplashScreen()),
+                                    );
+                                    final snackBar = SnackBar(
+                                      backgroundColor: Colors.white,
+                                      content: const Text(
+                                          "You have been logged out. Please log in again.", style: TextStyle(color: Color(0xff0f65a5)),),
+                                      duration: const Duration(seconds: 3),
+                                    );
+                                    ScaffoldMessenger.of(context)
+                                        .showSnackBar(snackBar);
+                                  } else {
+                                    final snackBar = SnackBar(
+                                      content: Text(
+                                          "Failed to update user role: $result", style: TextStyle(color: Color(0xff0f65a5))),
+                                      duration: const Duration(seconds: 3),
+                                    );
+                                    ScaffoldMessenger.of(context)
+                                        .showSnackBar(snackBar);
+                                  }
+                                }
                               },
                               child: Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 16.0),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 16.0),
                                 child: Text(
                                   "Leave Club",
                                   style: TextStyle(
@@ -310,18 +489,17 @@ class _MyClubScreenState extends State<MyClubScreen> {
                               ),
                             ),
                           )
-                        ]
-                      ],
-                    ),
-                  );
-                },
-              );
-            },
-          )
-        ),
+                        ],
+                      ),
+                    );
+                  },
+                );
+              },
+            )),
       ),
     ));
   }
+
   Widget _buildEventCategory(String title, List<EventModel> events) {
     final PageController pageController = PageController();
 

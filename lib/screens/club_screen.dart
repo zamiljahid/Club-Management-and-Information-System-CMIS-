@@ -97,6 +97,7 @@ class _ClubScreenState extends State<ClubScreen> {
                                 builder: (context) => ClubDetailsScreen(
                                   imageName: clubs[index].clubLogoUrl!,
                                   name: clubs[index].clubName!,
+                                  clubId: clubs[index].clubId!,
                                   description: clubs[index].clubDescription!,
                                   events: clubs[index].events!,
                                 ),
