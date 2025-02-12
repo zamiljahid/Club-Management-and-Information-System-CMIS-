@@ -22,7 +22,7 @@ import '../model/voter_exist_model.dart';
 
 const String baseUrl = 'http://10.0.2.2:5185';
 // create real base url : ngrok http http://localhost:5185
-// const String baseUrl = 'https://08ba-103-83-164-33.ngrok-free.app';
+// const String baseUrl = 'https://498c-2401-1900-1f5-55e4-cd89-c6ec-ae7b-d84f.ngrok-free.app';
 // const String baseUrl = 'http://localhost:5185';
 const String loginUrl = '/api/Account/Login';
 const String menuUrl = '/api/Menu/MenusByRole';
@@ -770,7 +770,7 @@ class ApiClient {
   }
 
   Future<dynamic> postAnnouncement(Object payload,BuildContext context) async {
-    var url = Uri.parse(baseUrl +  saveElectionUrl);
+    var url = Uri.parse(baseUrl +  saveAnnouncementUrl);
     try {
       var response = await http.post(
         url,

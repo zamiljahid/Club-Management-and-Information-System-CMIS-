@@ -236,6 +236,7 @@ class _AnnouncementScreenState extends State<AnnouncementScreen> {
         ),
         child: Column(
           children: [
+            SizedBox(height: 10,),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Row(
@@ -264,125 +265,123 @@ class _AnnouncementScreenState extends State<AnnouncementScreen> {
                 ],
               ),
             ),
-            FutureBuilder<List<AnnouncementModel>?>(
-              future: announcementsFuture,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator(
-                    color: Colors.white,
-                  ));
-                } else if (snapshot.hasError) {
-                  return Center(child: Text("Error: ${snapshot.error}"));
-                } else if (snapshot.hasData && snapshot.data != null) {
-                  final announcements = snapshot.data!;
-                  if (announcements.isEmpty) {
+            Expanded( // This ensures the content takes available space and enables scrolling
+              child: FutureBuilder<List<AnnouncementModel>?>(
+                future: announcementsFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
                     return Center(
+                      child: CircularProgressIndicator(color: Colors.white),
+                    );
+                  } else if (snapshot.hasError) {
+                    return Center(child: Text("Error: ${snapshot.error}"));
+                  } else if (snapshot.hasData && snapshot.data != null) {
+                    final announcements = snapshot.data!;
+                    if (announcements.isEmpty) {
+                      return Center(
                         child: Card(
                           elevation: 8.0,
                           child: Lottie.asset('animation/noData.json',
                               height: MediaQuery.of(context).size.height / 4),
-                        )
-                    );
-                  }
-                  return SingleChildScrollView(
-                    child: Padding(
+                        ),
+                      );
+                    }
+                    return ListView(
                       padding: const EdgeInsets.all(20.0),
-                      child: Column(
-                        children: [
-                          if(SharedPrefs.getString('role_id') =='2')
-                            GestureDetector(
-                              onTap: (){
-                                _showGiveAnnouncementDialog(context);
-                              },
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(15),
-                                child: BackdropFilter(
-                                  filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                                  child: Container(
-                                    height: 60,
-                                    width: double.infinity,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(15),
-                                      color: Colors.white.withOpacity(0.2),
-                                      border: Border.all(
-                                          color: Colors.white.withOpacity(0.3), width: 1),
-                                    ),
-                                    child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        Text(
-                                          'Give Announcement',
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                          textAlign: TextAlign.center,
-                                        ),
-                                      ],
-                                    ),
+                      children: [
+                        if (SharedPrefs.getString('role_id') == '2')
+                          GestureDetector(
+                            onTap: () {
+                              _showGiveAnnouncementDialog(context);
+                            },
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(15),
+                              child: BackdropFilter(
+                                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                                child: Container(
+                                  height: 60,
+                                  width: double.infinity,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(15),
+                                    color: Colors.white.withOpacity(0.2),
+                                    border: Border.all(
+                                        color: Colors.white.withOpacity(0.3), width: 1),
                                   ),
-                                ),
-                              ),
-                            ),
-                          ListView.builder(
-                            shrinkWrap: true,
-                            physics: NeverScrollableScrollPhysics(),
-                            itemCount: announcements.length,
-                            itemBuilder: (context, index) {
-                              final announcement = announcements[index];
-                              return Card(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
-                                elevation: 4,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(16.0),
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       Text(
-                                        announcement.announcementTitle ?? "No Title",
+                                        'Give Announcement',
                                         style: TextStyle(
-                                          fontSize: 24,
+                                          color: Colors.white,
+                                          fontSize: 18,
                                           fontWeight: FontWeight.bold,
                                         ),
-                                      ),
-                                      SizedBox(height: 10),
-                                      Text(
-                                        announcement.announcementText ?? "No Content",
-                                        style: TextStyle(fontSize: 16),
-                                      ),
-                                      SizedBox(height: 10),
-                                      Text(
-                                        announcement.createdAt != null
-                                            ? "Posted on: ${announcement.createdAt!.toLocal()}"
-                                            : "Date not available",
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          color: Colors.grey,
-                                        ),
+                                        textAlign: TextAlign.center,
                                       ),
                                     ],
                                   ),
                                 ),
-                              );
-                            },
+                              ),
+                            ),
                           ),
-                        ],
-                      ),
-                    ),
-                  );
-                } else {
-                  return Center(
+                        ListView.builder(
+                          shrinkWrap: true,
+                          physics: NeverScrollableScrollPhysics(),
+                          itemCount: announcements.length,
+                          itemBuilder: (context, index) {
+                            final announcement = announcements[index];
+                            return Card(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              elevation: 4,
+                              child: Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      announcement.announcementTitle ?? "No Title",
+                                      style: TextStyle(
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    SizedBox(height: 10),
+                                    Text(
+                                      announcement.announcementText ?? "No Content",
+                                      style: TextStyle(fontSize: 16),
+                                    ),
+                                    SizedBox(height: 10),
+                                    Text(
+                                      announcement.createdAt != null
+                                          ? "Posted on: ${announcement.createdAt!.toLocal()}"
+                                          : "Date not available",
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ],
+                    );
+                  } else {
+                    return Center(
                       child: Card(
                         elevation: 8.0,
                         child: Lottie.asset('animation/noData.json',
                             height: MediaQuery.of(context).size.height / 4),
-                      )
-                  );
-                }
-              },
+                      ),
+                    );
+                  }
+                },
+              ),
             ),
           ],
         ),
